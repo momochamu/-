@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ガチャゲーム</title>
+<style>
+body{
+    font-family: sans-serif;
+    background: linear-gradient(135deg,#4facfe,#00f2fe);
+    text-align:center;
+    color:white;
+    padding-top:50px;
+}
+
+h1{
+    font-size:40px;
+}
+
+#result{
+    margin:40px;
+    font-size:40px;
+    font-weight:bold;
+}
+
+button{
+    font-size:24px;
+    padding:15px 40px;
+    border:none;
+    border-radius:10px;
+    background:gold;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+button:hover{
+    transform:scale(1.1);
+}
+
+.common{color:#ddd;}
+.rare{color:#4eff4e;}
+.super{color:#4ecbff;}
+.ultra{color:#c84eff;}
+.legend{color:gold; text-shadow:0 0 10px gold;}
+
+#animation{
+    font-size:28px;
+    margin-top:20px;
+    height:40px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎮 ガチャゲーム 🎮</h1>
+
+<div id="animation"></div>
+<div id="result">ガチャを引こう！</div>
+
+<button onclick="gacha()">ガチャを引く</button>
+
+<script>
+
+function gacha(){
+
+    const animation = document.getElementById("animation");
+    const result = document.getElementById("result");
+
+    animation.innerText="ガチャを引いています...";
+    result.innerText="";
+    result.className="";
+
+    setTimeout(()=>{
+
+        const r = Math.random()*100;
+
+        let text="";
+        let className="";
+
+        if(r < 50){
+            text="★1 コモン";
+            className="common";
+        }
+        else if(r < 80){
+            text="★2 レア";
+            className="rare";
+        }
+        else if(r < 95){
+            text="★3 スーパーレア";
+            className="super";
+        }
+        else if(r < 99){
+            text="★4 ウルトラレア";
+            className="ultra";
+        }
+        else{
+            text="★5 レジェンド！！！";
+            className="legend";
+        }
+
+        animation.innerText="";
+        result.innerText=text;
+        result.className=className;
+
+    },1200);
+
+}
+
+</script>
+
+</body>
+</html>

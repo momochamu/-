@@ -1,112 +1,171 @@
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>ガチャゲーム</title>
+<title>よけてゴールゲーム</title>
+
 <style>
+
 body{
-    font-family: sans-serif;
-    background: linear-gradient(135deg,#4facfe,#00f2fe);
+    margin:0;
+    background:#222;
     text-align:center;
+    font-family:sans-serif;
     color:white;
-    padding-top:50px;
 }
 
 h1{
-    font-size:40px;
+    margin:10px;
 }
 
-#result{
-    margin:40px;
-    font-size:40px;
-    font-weight:bold;
+#game{
+    position:relative;
+    width:300px;
+    height:500px;
+    background:#333;
+    margin:auto;
+    overflow:hidden;
+    border:3px solid white;
+}
+
+#player{
+    position:absolute;
+    width:40px;
+    height:40px;
+    background:#4ecbff;
+    bottom:10px;
+    left:130px;
+    border-radius:10px;
+}
+
+.obstacle{
+    position:absolute;
+    width:50px;
+    height:20px;
+    background:red;
+}
+
+#goal{
+    position:absolute;
+    top:0;
+    width:100%;
+    height:20px;
+    background:gold;
+}
+
+.controls{
+    margin-top:15px;
 }
 
 button{
     font-size:24px;
-    padding:15px 40px;
-    border:none;
-    border-radius:10px;
-    background:gold;
-    cursor:pointer;
-    transition:0.2s;
+    padding:10px 30px;
+    margin:5px;
 }
 
-button:hover{
-    transform:scale(1.1);
-}
-
-.common{color:#ddd;}
-.rare{color:#4eff4e;}
-.super{color:#4ecbff;}
-.ultra{color:#c84eff;}
-.legend{color:gold; text-shadow:0 0 10px gold;}
-
-#animation{
-    font-size:28px;
-    margin-top:20px;
-    height:40px;
-}
 </style>
 </head>
 
 <body>
 
-<h1>🎮 ガチャゲーム 🎮</h1>
+<h1>🏃 ゴールを目指せ！</h1>
 
-<div id="animation"></div>
-<div id="result">ガチャを引こう！</div>
+<div id="game">
 
-<button onclick="gacha()">ガチャを引く</button>
+<div id="goal"></div>
+
+<div id="player"></div>
+
+</div>
+
+<div class="controls">
+<button onclick="moveLeft()">⬅</button>
+<button onclick="moveRight()">➡</button>
+</div>
+
+<p id="message"></p>
 
 <script>
 
-function gacha(){
+const player = document.getElementById("player");
+const game = document.getElementById("game");
+const message = document.getElementById("message");
 
-    const animation = document.getElementById("animation");
-    const result = document.getElementById("result");
+let playerX = 130;
+let playerY = 450;
 
-    animation.innerText="ガチャを引いています...";
-    result.innerText="";
-    result.className="";
+let obstacles = [];
 
-    setTimeout(()=>{
+function moveLeft(){
+    playerX -= 30;
+    if(playerX < 0) playerX = 0;
+    player.style.left = playerX + "px";
+}
 
-        const r = Math.random()*100;
+function moveRight(){
+    playerX += 30;
+    if(playerX > 260) playerX = 260;
+    player.style.left = playerX + "px";
+}
 
-        let text="";
-        let className="";
+function createObstacle(){
 
-        if(r < 50){
-            text="★1 コモン";
-            className="common";
+    const obs = document.createElement("div");
+    obs.classList.add("obstacle");
+
+    obs.style.left = Math.random()*250 + "px";
+    obs.style.top = "0px";
+
+    game.appendChild(obs);
+
+    obstacles.push(obs);
+}
+
+function gameLoop(){
+
+    playerY -= 1;
+    player.style.bottom = (500-playerY) + "px";
+
+    obstacles.forEach((obs,index)=>{
+
+        let top = parseInt(obs.style.top);
+
+        obs.style.top = top + 2 + "px";
+
+        const rect1 = player.getBoundingClientRect();
+        const rect2 = obs.getBoundingClientRect();
+
+        if(
+            rect1.left < rect2.right &&
+            rect1.right > rect2.left &&
+            rect1.top < rect2.bottom &&
+            rect1.bottom > rect2.top
+        ){
+            message.innerText="💥 ゲームオーバー";
+            clearInterval(loop);
         }
-        else if(r < 80){
-            text="★2 レア";
-            className="rare";
-        }
-        else if(r < 95){
-            text="★3 スーパーレア";
-            className="super";
-        }
-        else if(r < 99){
-            text="★4 ウルトラレア";
-            className="ultra";
-        }
-        else{
-            text="★5 レジェンド！！！";
-            className="legend";
+
+        if(top > 500){
+            obs.remove();
+            obstacles.splice(index,1);
         }
 
-        animation.innerText="";
-        result.innerText=text;
-        result.className=className;
+    });
 
-    },1200);
+    if(playerY < 20){
+        message.innerText="🎉 ゴール！！";
+        clearInterval(loop);
+    }
 
 }
+
+setInterval(createObstacle,1200);
+
+const loop = setInterval(gameLoop,30);
 
 </script>
 
 </body>
 </html>
+```
